@@ -1,7 +1,6 @@
-function [outputArg1,outputArg2] = lorenz(inputArg1,inputArg2)
-%LORENZ Summary of this function goes here
-%   Detailed explanation goes here
-outputArg1 = inputArg1;
-outputArg2 = inputArg2;
+function f = lorenz(x1, x2, x3, pStruct)
+%Simulates based on the Lorenz equation 
+%   Needs work
+f = [-x2 - x3; x1 + pStruct.a * x2; pStruct.b + x3(x1 - pStruct.c)];
 end
 
