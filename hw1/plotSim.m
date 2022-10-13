@@ -1,5 +1,5 @@
 function fig = plotSim(pos, title_var, subtitle_var)
-cla; clf;
+cla; clf; close all;
 fig = figure;
 hold on;
 grid on;
