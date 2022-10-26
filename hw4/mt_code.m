@@ -25,7 +25,7 @@ for k = 1:kmax
     ... % Do some plotting stuff here
 end
 ... % Do some clean up stuff here
-end
+end % function NR_SolarSystemSimulator %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 function [x] = dqdt(p, m)
 for i = 1:9
@@ -33,7 +33,7 @@ for i = 1:9
         x(i, j) = p(i, j) / m(i);
     end
 end
-end
+end % function dqdt %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 function [x] = dpdt(q, m, G)
     x = zeros(9, 3);
@@ -47,4 +47,4 @@ function [x] = dpdt(q, m, G)
             end
         end
     end
-end
+end % function dpdt %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
