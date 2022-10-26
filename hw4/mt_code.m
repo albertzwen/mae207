@@ -25,6 +25,8 @@ for k = 1:kmax
     ... % Do some plotting stuff here
 end
 ... % Do some clean up stuff here
+end
+
 function [x] = dqdt(p, m)
 for i = 1:9
     for j = 1:3
