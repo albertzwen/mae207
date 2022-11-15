@@ -40,28 +40,27 @@ for tStep= 1:Tmax / dt
         %         btdiag = 0;
         ctdiag = 0;
         %         if (k == 1)
+%         rhs = y_march(2:N) .* (y_march(3:N + 1) - y_march(1:N - 1));
         rhs = y_march(2:N);
         btdiag = 1;
         %         else
         if (k > 2)
-            ex_weight = (aimbt(k, k - 1) - bbt(k - 1)) .* dt / imfun_denom;
-            im_weight = (aexbt(k, k - 1) - bbt(k - 1)) .* dt / exfun_denom;
+            ex_weight = (aimbt(k, k - 1) - bbt(k - 1)) .* dt;
+            im_weight = (aexbt(k, k - 1) - bbt(k - 1)) .* dt;
 
-            atdiag = -ex_weight * dt / (imfun_denom);
+            atdiag = -ex_weight * dt / imfun_denom;
             btdiag = 1 + im_weight * dt / exfun_denom;
             ctdiag = -ex_weight * dt / imfun_denom; % questionable
-            rhs = y_march(2:N) + ...
-                (aimbt(k, k - 1) - bbt(k - 1)) .* dt  / imfun_denom.* (y_march(3:N + 1) - 2 * y_march(2:N) + y_march(1:N - 1)) + ...
-                (aexbt(k, k - 1) - bbt(k - 1)) .* dt .* r  / exfun_denom;
-            %             r = y_march(2:N) + ...
-            %                 (aimbt(k, k - 1) - bbt(k - 1)) .* dt  / imfun_denom.* (y_march(3:N + 1) - 2 * y_march(2:N) + y_march(1:N - 1)) + ...
-            %                 (aexbt(k, k - 1) - bbt(k - 1)) .* dt .* r  / exfun_denom;
+
+            rhs = rhs + ...
+                ex_weight .* (y_march(3:N + 1) - 2 * y_march(2:N) + y_march(1:N - 1)) + ...
+                im_weight .* r;
         end
-        %         y_march(2:N) = NR_ThomasTT(atdiag, btdiag, ctdiag, rhs', N - 1);
+%         y_march(2:N) = NR_ThomasTT(atdiag, btdiag, ctdiag, rhs', N - 1);
         y_march(1:N - 1) = NR_ThomasTT(atdiag, btdiag, ctdiag, rhs', N - 1);
-        %         if (k < 4)
-        %             rhs = r;
-        %         end
+        if (k < 4)
+            rhs = r;
+        end
     end %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% END OF RK LOOP %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     if (mod(tStep,PlotInterval)==0) NR_PlotXY(x,y_march,tStep*dt,0,L,-3,3); end
 end
