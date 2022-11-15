@@ -37,7 +37,7 @@ t1 = x(2:N);
 for tStep= 1:Tmax / dt
     for k = 1:4 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% ALL 4 RK SUBSTEPS %%%%%%%%%%%%%%%%%%%%%%%%%%%%
         t0 = x(2:N);
-        t2 = -y_march(2:N) .* (y_march(3:N + 1) - y_march(1:N - 1)) .* aimbt(k, k);  % nonlinear for EX
+        t2 = -y_march(2:N) .* (y_march(3:N + 1) - y_march(1:N - 1)) .* aexbt(k, k);  % nonlinear for EX
         if k > 2
             y_march(1:N - 1) = t0;
         end
