@@ -18,21 +18,18 @@ NR_PlotXY(x,y_march,0,0,L,-3,3)
 % beta_bar = [1    25/8  9/4];     e=beta_bar.*h_bar/(2*dx);  b=1+h_bar/dx^2;
 % zeta_bar = [0   -17/8 -5/4];     f=zeta_bar.*h_bar/(2*dx);  c= -h_bar/(2*dx^2);
 % if last two characters end in bt, it means it's from Butcher tableau
+bbt = [0, 673488652607 / 2334033219546, 493801219040 / 853653026979, 184814777513 / 1389668723319];
 aexbt = [0, 0, 0, 0; ...
     3375509829940 / 42525919076317, 0, 0, 0 ; ...
     0, 272778623835 / 1039454778728, 0, 0; ...
-    0, 0, 0, 0];
+    bbt];
 aimbt = [0, 0, 0, 0; ...
     0, 3375509829940 / 4525919076317, 0, 0;
     0, 11712383888607531889907 / 32694570495602105556248, 566138307881 / 912153721139, 0; ...
-    0, 0, 1660544566939 / 2334033219546, 0];
-bbt = [0, 673488652607 / 2334033219546, 493801219040 / 853653026979, 184814777513 / 1389668723319];
+    bbt(1), bbt(2), 1660544566939 / 2334033219546, 0];
 cbt = [0, 3375509829940 / 42525919076317, 272778623835 / 1039454778728, 1];
 % bimbt2o = [0, 366319659506 / 1093160237145, 270096253287 / 480244073137, 104228367309 / 1017021570740];
 % bexbt2o = [449556814708 / 1155810555193, 0, 210901428686 / 1400818478499, 480175564215 / 1042748212601];
-
-ex_store = zeros(1, N - 1);
-im_store = zeros(1, N - 1);
 
 exfun_denom = (dx)^2;
 imfun_denom = 2 * dx;
@@ -40,7 +37,7 @@ for tStep= 1:Tmax / dt
     for k = 1:4 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% ALL 4 RK SUBSTEPS %%%%%%%%%%%%%%%%%%%%%%%%%%%%
         r = -y_march(2:N) .* (y_march(3:N + 1) - y_march(1:N - 1));
         atdiag = 0;
-        btdiag = 0;
+%         btdiag = 0;
         ctdiag = 0;
         if (k == 1)
             rhs = y_march(2:N);
@@ -48,9 +45,9 @@ for tStep= 1:Tmax / dt
         else
             ex_weight = (aimbt(k, k - 1) - bbt(k - 1)) .* dt / imfun_denom;
             im_weight = (aexbt(k, k - 1) - bbt(k - 1)) .* dt / exfun_denom;
-            atdiag = ex_weight * dt / (2 * dx^2);
+            atdiag = -ex_weight * dt / (2 * dx^2);
             btdiag = 1 + im_weight / dx^2;
-            ctdiag = 1;
+            ctdiag = -1 / (2 * dx^2);
             rhs = y_march(2:N) + ...
                 (aimbt(k, k - 1) - bbt(k - 1)) .* dt  / imfun_denom.* (y_march(3:N + 1) - 2 * y_march(2:N) + y_march(1:N - 1)) + ...
                 (aexbt(k, k - 1) - bbt(k - 1)) .* dt .* r  / exfun_denom;
