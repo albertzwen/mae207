@@ -31,8 +31,8 @@ cbt = [0, 3375509829940 / 42525919076317, 272778623835 / 1039454778728, 1];
 % bimbt2o = [0, 366319659506 / 1093160237145, 270096253287 / 480244073137, 104228367309 / 1017021570740];
 % bexbt2o = [449556814708 / 1155810555193, 0, 210901428686 / 1400818478499, 480175564215 / 1042748212601];
 
-exfun_denom = (dx)^2;
-imfun_denom = 2 * dx;
+dxsquared = (dx)^2;
+dxmult2= 2 * dx;
 for tStep= 1:Tmax / dt
     for k = 1:4 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% ALL 4 RK SUBSTEPS %%%%%%%%%%%%%%%%%%%%%%%%%%%%
         r = -y_march(2:N) .* (y_march(3:N + 1) - y_march(1:N - 1)); % nonlinear
@@ -48,9 +48,9 @@ for tStep= 1:Tmax / dt
             ex_weight = (aimbt(k, k - 1) - bbt(k - 1)) .* dt;
             im_weight = (aexbt(k, k - 1) - bbt(k - 1)) .* dt;
 
-            atdiag = -ex_weight * dt / imfun_denom;
-            btdiag = 1 + im_weight * dt / exfun_denom;
-            ctdiag = -ex_weight * dt / imfun_denom; % questionable
+            atdiag = -ex_weight  / dxmult2;
+            btdiag = 1 + im_weight / dxsquared;
+            ctdiag = -ex_weight / dxmult2; % questionable
 
             rhs = rhs + ...
                 ex_weight .* (y_march(3:N + 1) - 2 * y_march(2:N) + y_march(1:N - 1)) + ...
@@ -58,10 +58,12 @@ for tStep= 1:Tmax / dt
         end
 %         y_march(2:N) = NR_ThomasTT(atdiag, btdiag, ctdiag, rhs', N - 1);
         y_march(1:N - 1) = NR_ThomasTT(atdiag, btdiag, ctdiag, rhs', N - 1);
-        if (k < 4)
-            rhs = r;
-        end
+%         y_march(1:N - 1) = rhs; 
+%         if (k < 4)
+%             rhs = r;
+%         end
     end %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% END OF RK LOOP %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    y_march(1:N - 1) = rhs;
     if (mod(tStep,PlotInterval)==0) NR_PlotXY(x,y_march,tStep*dt,0,L,-3,3); end
 end
 end % function NR_Burgers_CNRKW3_FD
