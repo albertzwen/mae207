@@ -14,12 +14,8 @@ x = (0:N) .* dx; % length N + 1
 y_march = -sin(pi * x / L) - sin(2 * pi * x / L) + sin(6 * pi * x / L);
 NR_PlotXY(x,y_march,0,0,L,-3,3)
 % crank up viscosity on second derivative coeff
-% check BCs
 % change time discretization
 % Precalculate the time-stepping coefficients used in the simulation
-% h_bar = dt*[8/15 2/15  1/3];     d=h_bar/(2*dx^2);          a= -h_bar/(2*dx^2);
-% beta_bar = [1    25/8  9/4];     e=beta_bar.*h_bar/(2*dx);  b=1+h_bar/dx^2;
-% zeta_bar = [0   -17/8 -5/4];     f=zeta_bar.*h_bar/(2*dx);  c= -h_bar/(2*dx^2);
 % if last two characters end in bt, it means it's from Butcher tableau
 bbt = [0, 673488652607 / 2334033219546, 493801219040 / 853653026979, 184814777513 / 1389668723319];
 aexbt = [0, 0, 0, 0; ...
@@ -30,7 +26,7 @@ aimbt = [0, 0, 0, 0; ...
     0, 3375509829940 / 4525919076317, 0, 0;
     0, 11712383888607531889907 / 32694570495602105556248, 566138307881 / 912153721139, 0; ...
     bbt(1), bbt(2), 1660544566939 / 2334033219546, 0];
-cbt = [0, 3375509829940 / 42525919076317, 272778623835 / 1039454778728, 1];
+% cbt = [0, 3375509829940 / 42525919076317, 272778623835 / 1039454778728, 1];
 % bimbt2o = [0, 366319659506 / 1093160237145, 270096253287 / 480244073137, 104228367309 / 1017021570740];
 % bexbt2o = [449556814708 / 1155810555193, 0, 210901428686 / 1400818478499, 480175564215 / 1042748212601];
 
@@ -39,14 +35,13 @@ dxmult2= 2 * dx;
 for tStep= 1:Tmax / dt
     for k = 1:4 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% ALL 4 RK SUBSTEPS %%%%%%%%%%%%%%%%%%%%%%%%%%%%
         r = -y_march(2:N) .* (y_march(3:N + 1) - y_march(1:N - 1)); % nonlinear
+        % QUESTIONABLE
         atdiag = 0;
-        %         btdiag = 0;
+        btdiag = 1.07;
         ctdiag = 0;
-        %         if (k == 1)
-%         rhs = y_march(2:N) .* (y_march(3:N + 1) - y_march(1:N - 1));
+        
         rhs = y_march(2:N);
-        btdiag = 1;
-        %         else
+        
         if (k > 2)
             ex_weight = (aimbt(k, k - 1) - bbt(k - 1)) .* dt;
             im_weight = (aexbt(k, k - 1) - bbt(k - 1)) .* dt;
@@ -59,14 +54,11 @@ for tStep= 1:Tmax / dt
                 ex_weight .* (y_march(3:N + 1) - 2 * y_march(2:N) + y_march(1:N - 1)) + ...
                 im_weight .* r;
         end
-%         y_march(2:N) = NR_ThomasTT(atdiag, btdiag, ctdiag, rhs', N - 1);
         y_march(2:N) = NR_ThomasTT(atdiag, btdiag, ctdiag, rhs', N - 1);
-%         y_march(1:N - 1) = rhs; 
-%         if (k < 4)
-%             rhs = r;
-%         end
     end %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% END OF RK LOOP %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     y_march(2:N) = rhs;
+    y_march(1) = 0;
+    y_march(N + 1) = 0;
     if (mod(tStep,PlotInterval)==0) NR_PlotXY(x,y_march,tStep*dt,0,L,-3,3); end
 end
 end % function NR_Burgers_CNRKW3_FD
