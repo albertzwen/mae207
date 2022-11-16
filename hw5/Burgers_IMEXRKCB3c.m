@@ -26,37 +26,47 @@ aimbt = [0, 0, 0, 0; ...
     0, 3375509829940 / 4525919076317, 0, 0;
     0, 11712383888607531889907 / 32694570495602105556248, 566138307881 / 912153721139, 0; ...
     bbt(1), bbt(2), 1660544566939 / 2334033219546, 0];
-% cbt = [0, 3375509829940 / 42525919076317, 272778623835 / 1039454778728, 1];
+cbt = [0, 3375509829940 / 42525919076317, 272778623835 / 1039454778728, 1];
 % bimbt2o = [0, 366319659506 / 1093160237145, 270096253287 / 480244073137, 104228367309 / 1017021570740];
 % bexbt2o = [449556814708 / 1155810555193, 0, 210901428686 / 1400818478499, 480175564215 / 1042748212601];
-
+hbar = dt .* [cbt(2), cbt(3) - cbt(2), 1 - cbt(3)];
+betabar = [aimbt(2, 1) / cbt(2), aimbt(3, 2) / (cbt(3) - cbt(2)), bbt(3) / (1 - cbt(3))];
+zetabar = [0, -17 / 8 / (cbt(3) - cbt(2)), -5 / 4 / (1 - cbt(3))];
 dxsquared = (dx)^2;
-dxmult2= 2 * dx;
+dxmult2 = 2 * dx;
+atdiag = -hbar ./ dxmult2;
+btdiag = 1 + hbar ./ dxsquared;
+ctdiag = -hbar ./ dxmult2;
 for tStep= 1:Tmax / dt
     for k = 1:4 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% ALL 4 RK SUBSTEPS %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        ind = k;
         r = -y_march(2:N) .* (y_march(3:N + 1) - y_march(1:N - 1)); % nonlinear
         % QUESTIONABLE
-        atdiag = 0;
-        btdiag = 1.07;
-        ctdiag = 0;
-        
+%         atdiag = 0;
+%         btdiag = 1.07;
+%         ctdiag = 0;
+
         rhs = y_march(2:N);
         
         if (k > 2)
             ex_weight = (aimbt(k, k - 1) - bbt(k - 1)) .* dt;
             im_weight = (aexbt(k, k - 1) - bbt(k - 1)) .* dt;
 
-            atdiag = -ex_weight  / dxmult2;
-            btdiag = 1 + im_weight / dxsquared;
-            ctdiag = -ex_weight / dxmult2; % questionable
+%             atdiag = -ex_weight  / dxmult2;
+%             btdiag = 1 + im_weight / dxsquared;
+%             ctdiag = -ex_weight / dxmult2; % questionable
 
             rhs = rhs + ...
                 ex_weight .* (y_march(3:N + 1) - 2 * y_march(2:N) + y_march(1:N - 1)) + ...
                 im_weight .* r;
         end
-        y_march(2:N) = NR_ThomasTT(atdiag, btdiag, ctdiag, rhs', N - 1);
+        if k == 4
+            ind = 3;    % not sure why 
+        end
+        y_march(2:N) = NR_ThomasTT(atdiag(ind), btdiag(ind), ctdiag(ind), rhs', N - 1);
     end %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% END OF RK LOOP %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     y_march(2:N) = rhs;
+    % enforce Dirichlet homogenous BCs
     y_march(1) = 0;
     y_march(N + 1) = 0;
     if (mod(tStep,PlotInterval)==0) NR_PlotXY(x,y_march,tStep*dt,0,L,-3,3); end
