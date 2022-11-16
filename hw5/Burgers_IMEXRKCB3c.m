@@ -13,6 +13,9 @@ dx = L / N;
 x = (0:N) .* dx; % length N + 1
 y_march = -sin(pi * x / L) - sin(2 * pi * x / L) + sin(6 * pi * x / L);
 NR_PlotXY(x,y_march,0,0,L,-3,3)
+% crank up viscosity on second derivative coeff
+% check BCs
+% change time discretization
 % Precalculate the time-stepping coefficients used in the simulation
 % h_bar = dt*[8/15 2/15  1/3];     d=h_bar/(2*dx^2);          a= -h_bar/(2*dx^2);
 % beta_bar = [1    25/8  9/4];     e=beta_bar.*h_bar/(2*dx);  b=1+h_bar/dx^2;
@@ -57,13 +60,13 @@ for tStep= 1:Tmax / dt
                 im_weight .* r;
         end
 %         y_march(2:N) = NR_ThomasTT(atdiag, btdiag, ctdiag, rhs', N - 1);
-        y_march(1:N - 1) = NR_ThomasTT(atdiag, btdiag, ctdiag, rhs', N - 1);
+        y_march(2:N) = NR_ThomasTT(atdiag, btdiag, ctdiag, rhs', N - 1);
 %         y_march(1:N - 1) = rhs; 
 %         if (k < 4)
 %             rhs = r;
 %         end
     end %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% END OF RK LOOP %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    y_march(1:N - 1) = rhs;
+    y_march(2:N) = rhs;
     if (mod(tStep,PlotInterval)==0) NR_PlotXY(x,y_march,tStep*dt,0,L,-3,3); end
 end
 end % function NR_Burgers_CNRKW3_FD
