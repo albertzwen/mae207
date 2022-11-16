@@ -1,6 +1,6 @@
 function Burgers_IMEXRKCB3c
 % function <a href="matlab:Burgers_IMEXRKCB3c">Burgers_IMEXRKCB3c</a>
-% Simulate the 1D Burgers on 0<x<L with homogeneous Dirichlet BCs using CN/RKW3 in time
+% Simulate the 1D Burgers on 0<x<L with homogeneous Dirichlet BCs using IMEXRKCB3c in time
 % (explicit on nonlinear terms, implicit on linear terms)
 
 % Initialize the simulation parameters (user input)
@@ -29,14 +29,16 @@ aimbt = [0, 0, 0, 0; ...
 cbt = [0, 3375509829940 / 42525919076317, 272778623835 / 1039454778728, 1];
 % bimbt2o = [0, 366319659506 / 1093160237145, 270096253287 / 480244073137, 104228367309 / 1017021570740];
 % bexbt2o = [449556814708 / 1155810555193, 0, 210901428686 / 1400818478499, 480175564215 / 1042748212601];
+% constants from CN/RKW3
 hbar = dt .* [cbt(2), cbt(3) - cbt(2), 1 - cbt(3)];
 betabar = [aimbt(2, 1) / cbt(2), aimbt(3, 2) / (cbt(3) - cbt(2)), bbt(3) / (1 - cbt(3))];
 zetabar = [0, -17 / 8 / (cbt(3) - cbt(2)), -5 / 4 / (1 - cbt(3))];
 dxsquared = (dx)^2;
 dxmult2 = 2 * dx;
-atdiag = -hbar ./ dxmult2;
+atdiag = -hbar ./ (2 * dxsquared);
 btdiag = 1 + hbar ./ dxsquared;
-ctdiag = -hbar ./ dxmult2;
+ctdiag = -hbar ./ (2 * dxsquared);
+
 for tStep= 1:Tmax / dt
     for k = 1:4 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% ALL 4 RK SUBSTEPS %%%%%%%%%%%%%%%%%%%%%%%%%%%%
         ind = k;
@@ -57,15 +59,15 @@ for tStep= 1:Tmax / dt
 %             ctdiag = -ex_weight / dxmult2; % questionable
 
             rhs = rhs + ...
-                ex_weight .* (y_march(3:N + 1) - 2 * y_march(2:N) + y_march(1:N - 1)) + ...
-                im_weight .* r;
+                im_weight .* (y_march(3:N + 1) - 2 * y_march(2:N) + y_march(1:N - 1)) + ...
+                ex_weight .*   r;
         end
         if k == 4
             ind = 3;    % not sure why 
         end
         y_march(2:N) = NR_ThomasTT(atdiag(ind), btdiag(ind), ctdiag(ind), rhs', N - 1);
     end %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% END OF RK LOOP %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    y_march(2:N) = rhs;
+%     y_march(2:N) = rhs;
     % enforce Dirichlet homogenous BCs
     y_march(1) = 0;
     y_march(N + 1) = 0;
