@@ -1,5 +1,7 @@
 function Burgers_IMEXRKCB3c
-% Simulate the 1D Burgers on 0<x<L with homogeneous Dirichlet BCs using IMEXRKCB3c in time
+% function <a href="matlab:Burgers_IMEXRKCB3c">Burgers_IMEXRKCB3c</a>
+% Simulate the 1D Burgers on 0<x<L with homogeneous Dirichlet BCs using CN/RKW3 in time
+
 % (explicit on nonlinear terms, implicit on linear terms)
 
 % Initialize the simulation parameters (user input)
@@ -86,8 +88,7 @@ for tStep= 1:Tmax / dt
         end
         y_march(2:N) = NR_ThomasTT(atdiag(ind), btdiag(ind), ctdiag(ind), rhs', N - 1);
     end %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% END OF RK LOOP %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    y_march(2:N) = rhs;
-
+    
     % enforce Dirichlet homogenous BCs
     %     u(1) = 0;
     %     u(N + 1) = 0;
