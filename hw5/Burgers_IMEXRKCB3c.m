@@ -1,4 +1,5 @@
 function Burgers_IMEXRKCB3c
+<<<<<<< HEAD
 % Simulate the 1D Burgers on 0<x<L with homogeneous Dirichlet BCs using IMEXRKCB3c in time
 % (explicit on nonlinear terms, implicit on linear terms)
 
@@ -31,27 +32,19 @@ a_imbt = [0, 0, 0, 0; ...
     0, 3375509829940 / 4525919076317, 0, 0;
     0, 11712383888607531889907 / 32694570495602105556248, 566138307881 / 912153721139, 0; ...
     bbt(1), bbt(2), 1660544566939 / 2334033219546, 0];
-% derivations of constants through CN of RK4
-zeta = [0, bbt(1) - a_exbt(2, 1), bbt(2) - a_exbt(3, 2), bbt(3) - a_exbt(4, 3)];
-h_bar = dt .* [cbt(2), cbt(3) - cbt(2), cbt(4) - cbt(3), 1 - cbt(4)];
-beta_bar = [a_exbt(2, 1) / cbt(2), a_exbt(3, 2) / (cbt(3) - cbt(2)), ...
-    a_exbt(4, 3) / (cbt(4) - cbt(3)), bbt(4) / (1 - cbt(4))];
-zeta_bar = [0, zeta(2) / (cbt(3) - cbt(2)), zeta(3) / (cbt(4) - cbt(3)), ...
-    zeta(4) / (1 - cbt(4))];
 
+cbt = [0, 3375509829940 / 42525919076317, 272778623835 / 1039454778728, 1];
+% bimbt2o = [0, 366319659506 / 1093160237145, 270096253287 / 480244073137, 104228367309 / 1017021570740];
+% bexbt2o = [449556814708 / 1155810555193, 0, 210901428686 / 1400818478499, 480175564215 / 1042748212601];
+hbar = dt .* [cbt(2), cbt(3) - cbt(2), 1 - cbt(3)];
+betabar = [aimbt(2, 1) / cbt(2), aimbt(3, 2) / (cbt(3) - cbt(2)), bbt(3) / (1 - cbt(3))];
+zetabar = [0, -17 / 8 / (cbt(3) - cbt(2)), -5 / 4 / (1 - cbt(3))];
 dxsquared = (dx)^2;
 dxmult2 = 2 * dx;
+atdiag = -hbar ./ dxmult2;
+btdiag = 1 + hbar ./ dxsquared;
+ctdiag = -hbar ./ dxmult2;
 
-% d = h_bar ./ (2 * dxsquared);
-% e = beta_bar .* h_bar ./ (dxmult2);
-% f = zeta_bar .* h_bar ./ (dxmult2);
-% a = -h_bar ./ (2 * dxsquared);
-% b = 1 + h_bar ./ dxsquared;
-% c = -h_bar / (2 * dxsquared);
-
-y = zeros(size(x));
-z = zeros(size(x));
-% procedures for implementation from equation 19 of CB15.pdf
 for tStep= 1:Tmax / dt
     for k = 1:4 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% ALL 4 RK SUBSTEPS %%%%%%%%%%%%%%%%%%%%%%%%%%%%
         r = -u(2:N) .* (u(3:N + 1) - u(1:N - 1));   % nonlinear term
@@ -77,8 +70,25 @@ for tStep= 1:Tmax / dt
             (y(1:N - 1) + a_imbt(k, k) .* z(1:N - 1)));
 %         y(2:N) = -(y(2:N) .* (y(3:N + 1) - y(1:N - 1)));
         
-        u(2:N) = u(2:N) + bbt(k) * dt .* z(2:N) + bbt(k) * dt .* y(2:N);
+        if (k > 2)
+            ex_weight = (aimbt(k, k - 1) - bbt(k - 1)) .* dt;
+            im_weight = (aexbt(k, k - 1) - bbt(k - 1)) .* dt;
+
+%             atdiag = -ex_weight  / dxmult2;
+%             btdiag = 1 + im_weight / dxsquared;
+%             ctdiag = -ex_weight / dxmult2; % questionable
+
+            rhs = rhs + ...
+                ex_weight .* (y_march(3:N + 1) - 2 * y_march(2:N) + y_march(1:N - 1)) + ...
+                im_weight .* r;
+        end
+        if k == 4
+            ind = 3;    % not sure why 
+        end
+        y_march(2:N) = NR_ThomasTT(atdiag(ind), btdiag(ind), ctdiag(ind), rhs', N - 1);
     end %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% END OF RK LOOP %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    y_march(2:N) = rhs;
+
     % enforce Dirichlet homogenous BCs
     %     u(1) = 0;
     %     u(N + 1) = 0;
