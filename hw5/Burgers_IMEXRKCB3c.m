@@ -1,5 +1,4 @@
 function Burgers_IMEXRKCB3c
-<<<<<<< HEAD
 % Simulate the 1D Burgers on 0<x<L with homogeneous Dirichlet BCs using IMEXRKCB3c in time
 % (explicit on nonlinear terms, implicit on linear terms)
 
