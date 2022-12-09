@@ -1,4 +1,4 @@
-function PlotXY(x,y,t,xmin,xmax,ymin,ymax)
+function NR_PlotXY(x,y,t,xmin,xmax,ymin,ymax)
 % function PlotXY(x,y,t,xmin,xmax,ymin,ymax)
 % A supplemental plotting code used in several of the simulations in Chapter 11 of NR.
 % See <a href="matlab:NRweb">Numerical Renaissance: simulation, optimization, & control</a>, Section 11.2.
