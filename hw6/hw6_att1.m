@@ -1,4 +1,4 @@
-function hw6_att1(L, Tmax, N, dt)
+function hw6_att1(L, Tmax, N, dt, BCcase_a_bool)
 % Solves the 1D wave equation using CN in time, compact Pade in space
 % L = dimension width
 % Tmax = total simulation time
@@ -18,8 +18,13 @@ r = 1 / dt * [eye(N), zeros(N); zeros(N), C] + 0.5 * [zeros(N), eye(N); D zeros(
 for step = 1:Tmax / dt
     x = A \ r;
     t = t + dt;
-    % enforce homogenous BCs
-    x([1 N]) = 0;
+    if BCcase_a_bool
+        % enforce homogenous Dirichlet BCs
+        x([1 N]) = 0;
+    else
+        % enforce periodic BCs
+        
+    end
     NR_PlotXY(xgrid,x(1:N),t,-L/2,L/2,-0.2,1.2); 
 end
 end
