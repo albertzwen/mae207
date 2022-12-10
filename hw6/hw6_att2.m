@@ -19,9 +19,9 @@ F = 1.2 / dx^2 * diag(ones(2 * N - 3, 1), -3) ...   % subsubsubdiag
     - 2.4 / dx^2 * diag(rem(1:2 * N - 1, 2), -1) ...   % subdiag
     + (diag(rem(1:2 * N - 1, 2),  1) ...
     + 1.2 / dx^2 * diag(mod(0:2 * N - 1 - 1, 2), 1));  % superdiag
-E = diag(0.1 * mod(0: 2 * N - 2 - 1, 2), -2) ... % subsubdiag
+E = 0.1 * diag(mod(0: 2 * N - 2 - 1, 2), -2) ... % subsubdiag
     + diag(ones(2 * N, 1), 0) ... % main diag
-    + diag(0.1 * mod(0: 2 * N - 2 - 1 , 2), 2);   % supersuperdiag
+    + 0.1 * diag(mod(0: 2 * N - 2 - 1 , 2), 2);   % supersuperdiag
 % if ~BCcase_a_bool
 %     % perform modifications on corners of E
 %     E(1, end) = ?;
