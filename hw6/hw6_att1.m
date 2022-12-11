@@ -19,8 +19,8 @@ D = 1 / (dx)^2 * TTmaker(1.2, -2.4, 1.2, N);
 if ~BCcase_a_bool
     C(1, end) = 0.1;
     C(end, 1) = 0.1;
-    D(1, end) = 1.2;
-    D(end, 1) = 1.2;
+    D(1, end) = 1.2 / dx^2;
+    D(end, 1) = 1.2 / dx^2;
 end
 A = 1 / dt * [eye(N), zeros(N); zeros(N), C] ...
     - 0.5 * [zeros(N), eye(N); D, zeros(N)];    % what does it look like?
