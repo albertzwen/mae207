@@ -26,7 +26,6 @@ if ~BCcase_a_bool
         + 0.1 * diag([0 1 0], 2 * N - 3);
     F = F + 1.2 / dx^2 * diag([0 1 0], 2 * N - 3) ...
         + 1.2 / dx^2 * diag(1, -(2 * N - 1));
-    % - 2.4 / dx^2 * diag(1, 2 * N - 1) ...
 end
 A = (E / dt) - (F / 2);
 rr = (E / dt) + (F / 2);
