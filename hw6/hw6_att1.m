@@ -1,9 +1,11 @@
-function hw6_att1(L, Tmax, N, dt, BCcase_a_bool)
+function hw6_att1(L, Tmax, N, dt, BCcase_a_bool, interval)
 % Solves the 1D wave equation using CN in time, compact Pade in space
 % L = dimension width
 % Tmax = total simulation time
 % N = number of gridpoint discretizations
 % dt = time step size
+% BCcase_a_bool = boolean that indicates case a or b
+%% Constant definition
 dx = L/N; 
 t = 0;
 xgrid = (-N / 2:N / 2 - 1)' * dx;   % discretized points on x
@@ -12,7 +14,16 @@ q=exp(-xgrid.^2/0.1);
 % v=0;    
 v = zeros(N, 1);    
 x = [q; v]; % vector x, q = x(1:N)
+%% figure saving
+scenarioName = strcat('plots/att1/');
+if BCcase_a_bool
+    scenarioName = strcat(scenarioName, 'case_a');
+else
+    scenarioName = strcat(scenarioName, 'case_b');
+end
+scenarioName = strcat(scenarioName, '/N', num2str(N), 'dt', num2str(dt));
 NR_PlotXY(xgrid,x(1:N),t,-L/2,L/2,-0.2,1.2); 
+saveas(gcf, strcat(scenarioName, '/t', num2str(t), '.png'));
 
 C = TTmaker(0.1, 1, 0.1, N);
 D = 1 / (dx)^2 * TTmaker(1.2, -2.4, 1.2, N);
@@ -34,7 +45,10 @@ for step = 1:Tmax / dt
         % enforce homogenous Dirichlet BCs
         x([1 N], 1) = 0;            
     end
-    NR_PlotXY(xgrid,x(1:N),t,-L/2,L/2,-0.2,1.2); 
+    if mod(step, interval) == 0
+        NR_PlotXY(xgrid,x(1:N),t,-L/2,L/2,-0.2,1.2); 
+        saveas(gcf, strcat(scenarioName, '/t', num2str(t), '.png'));
+    end
 end
 end
 
